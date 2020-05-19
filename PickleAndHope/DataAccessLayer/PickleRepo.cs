@@ -6,11 +6,19 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace PickleAndHope.DataAccessLayer
 {
     public class PickleRepo
     {
+        string connectionString;
+
+        public PickleRepo(IConfiguration config)
+        {
+            connectionString = config.GetConnectionString("PickleAndHope");
+        }
+
         static List<Pickle> _pickles = new List<Pickle>() 
         { 
             new Pickle() 
@@ -22,8 +30,6 @@ namespace PickleAndHope.DataAccessLayer
                 Size = "large" 
             } 
         };
-
-        const string connectionString = "Server=localhost;Database=PickleAndHope;Trusted_Connection=true;";
 
         public Pickle Add(Pickle pickle)
         {
