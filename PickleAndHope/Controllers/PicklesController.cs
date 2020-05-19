@@ -13,7 +13,12 @@ namespace PickleAndHope.Controllers
     [ApiController]
     public class PicklesController : ControllerBase
     {
-        PickleRepo _repository = new PickleRepo();
+        PickleRepo _repository;
+
+        public PicklesController(PickleRepo repository)
+        {
+            _repository = repository;
+        }
 
         [HttpPost("add")]
         public IActionResult AddPickle(Pickle pickleToAdd)
@@ -21,8 +26,8 @@ namespace PickleAndHope.Controllers
             var existingPickle = _repository.GetByType(pickleToAdd.Type);
             if (existingPickle == null)
             {
-                _repository.Add(pickleToAdd);
-                return Created("", pickleToAdd);
+                var newPickle = _repository.Add(pickleToAdd);
+                return Created("", newPickle);
             }
             else
             {
@@ -50,6 +55,14 @@ namespace PickleAndHope.Controllers
             {
                 return Ok(selectedPickle);
             }
+        }
+
+        [HttpGet("type/{type}")]
+        public IActionResult GetPickleByType(string type)
+        {
+            var pickle = _repository.GetByType(type);
+            if (pickle == null) return NotFound("no match");
+            return Ok(pickle);
         }
     }
 }
